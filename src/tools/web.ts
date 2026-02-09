@@ -165,6 +165,53 @@ export async function getCurrentUrl(): Promise<{ url: string; error?: string }> 
 }
 
 /**
+ * List all open tabs in the current browser context
+ */
+export async function listTabs(): Promise<{
+    tabs: { title: string; url: string; index: number }[];
+    error?: string
+}> {
+    try {
+        const page = await browserManager.getPage();
+        const context = page.context();
+        const pages = context.pages();
+
+        const tabs = await Promise.all(pages.map(async (p, i) => ({
+            title: await p.title(),
+            url: p.url(),
+            index: i
+        })));
+
+        return { tabs };
+    } catch (error) {
+        return { tabs: [], error: String(error) };
+    }
+}
+
+/**
+ * Switch to a specific tab by index
+ */
+export async function switchTab(index: number): Promise<{ success: boolean; error?: string }> {
+    try {
+        const page = await browserManager.getPage();
+        const context = page.context();
+        const pages = context.pages();
+
+        if (index < 0 || index >= pages.length) {
+            return { success: false, error: `Invalid tab index: ${index}` };
+        }
+
+        // In Playwright, we conceptually just "use" the other page object
+        // For MCP, we'll tell the BrowserManager to update its active page
+        await browserManager.setActivePage(pages[index]);
+
+        return { success: true };
+    } catch (error) {
+        return { success: false, error: String(error) };
+    }
+}
+
+/**
  * Get page accessibility snapshot for AI understanding
  */
 export async function getAccessibilitySnapshot(): Promise<{

@@ -56,6 +56,12 @@ export class BrowserManager {
         this.page = null;
     }
 
+    async setActivePage(page: Page): Promise<void> {
+        this.page = page;
+        this.page.setDefaultTimeout(config.timeouts.action);
+        this.page.setDefaultNavigationTimeout(config.timeouts.navigation);
+    }
+
     isInitialized(): boolean {
         return this.page !== null;
     }

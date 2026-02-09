@@ -199,6 +199,26 @@ const TOOLS = [
         },
     },
     {
+        name: 'web_list_tabs',
+        description: 'List all open tabs/pages in the browser',
+        inputSchema: {
+            type: 'object' as const,
+            properties: {},
+            required: [],
+        },
+    },
+    {
+        name: 'web_switch_tab',
+        description: 'Switch to a specific tab by index',
+        inputSchema: {
+            type: 'object' as const,
+            properties: {
+                index: { type: 'number', description: 'Index of the tab to switch to (from web_list_tabs)' },
+            },
+            required: ['index'],
+        },
+    },
+    {
         name: 'browser_close',
         description: 'Close the browser',
         inputSchema: {
@@ -280,6 +300,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                 break;
             case 'web_accessibility_snapshot':
                 result = await web.getAccessibilitySnapshot();
+                break;
+            case 'web_list_tabs':
+                result = await web.listTabs();
+                break;
+            case 'web_switch_tab':
+                result = await web.switchTab((args as { index: number }).index);
                 break;
             case 'browser_close':
                 await browserManager.close();
