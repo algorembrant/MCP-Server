@@ -1,1 +1,28 @@
+# Sensitive information
+.env
+.env.*
+*.key
+*.pem
+credentials.json
+secrets.json
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm/
+
+# TypeScript
+dist/
+lib/
+*.tsbuildinfo
+
+# OS/IDEs
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Existing
 .warning/
