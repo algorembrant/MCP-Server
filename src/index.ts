@@ -301,6 +301,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             case 'web_accessibility_snapshot':
                 result = await web.getAccessibilitySnapshot();
                 break;
+            case 'web_new_tab':
+                result = await web.newTab((args as { url?: string }).url);
+                break;
+            case 'web_close_tab':
+                result = await web.closeTab();
+                break;
             case 'web_list_tabs':
                 result = await web.listTabs();
                 break;

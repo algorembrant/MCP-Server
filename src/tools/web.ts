@@ -165,6 +165,55 @@ export async function getCurrentUrl(): Promise<{ url: string; error?: string }> 
 }
 
 /**
+ * Open a new tab and return its index
+ */
+export async function newTab(url?: string): Promise<{ index: number; success: boolean; error?: string }> {
+    try {
+        const page = await browserManager.getPage();
+        const context = page.context();
+        const newPage = await context.newPage();
+
+        // Update active page in manager
+        await browserManager.setActivePage(newPage);
+
+        if (url) {
+            await newPage.goto(url);
+            await newPage.waitForLoadState('networkidle');
+        }
+
+        const index = context.pages().length - 1;
+        return { index, success: true };
+    } catch (error) {
+        return { index: -1, success: false, error: String(error) };
+    }
+}
+
+/**
+ * Close the current tab
+ */
+export async function closeTab(): Promise<{ success: boolean; error?: string }> {
+    try {
+        const page = await browserManager.getPage();
+        const context = page.context();
+        const pages = context.pages();
+
+        if (pages.length <= 1) {
+            return { success: false, error: 'Cannot close the last remaining tab' };
+        }
+
+        await page.close();
+
+        // Set active page to the last one
+        const remainingPages = context.pages();
+        await browserManager.setActivePage(remainingPages[remainingPages.length - 1]);
+
+        return { success: true };
+    } catch (error) {
+        return { success: false, error: String(error) };
+    }
+}
+
+/**
  * List all open tabs in the current browser context
  */
 export async function listTabs(): Promise<{
